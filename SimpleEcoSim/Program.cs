@@ -14,14 +14,14 @@ namespace SimpleEcoSim
             Random rnd = new Random();
             Console.Clear();
             ConsoleService.Init();
-            AnimalService animalService = new AnimalService(10, 25, 0);
+            AnimalService animalService = new AnimalService(10, 15, 5);
+            MovementService movementService = new MovementService(animalService);
             do
             {
                 while (!Console.KeyAvailable)
                 {
-                    ConsoleService.DrawAll(animalService.GetItems());
-                    Thread.Sleep(1000);
-                    animalService.AddPlant(1);
+                    ConsoleService.DrawAll(animalService.Items);
+                    movementService.MoveAll();
                     Thread.Sleep(1000);
                 }
             }

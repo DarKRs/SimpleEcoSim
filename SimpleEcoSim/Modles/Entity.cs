@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimpleEcoSim.Modles
 {
-    abstract class Entity
+    public abstract class Entity
     {
         public char Sign { get; set; }
         public Point pos { get; set; }

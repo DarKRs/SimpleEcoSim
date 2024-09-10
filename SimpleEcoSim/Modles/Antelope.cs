@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace SimpleEcoSim.Modles
 {
-    internal class Antilope :Entity, IMovable
+    internal class Antelope :Entity, IMovable
     {
-        public Antilope()
+        public Antelope()
         {
             Sign = 'A';
             Speed = 2;
         }
 
-        public Antilope(Point position)
+        public Antelope(Point position)
         {
             Sign = 'A';
             pos = position;
             Speed = 2;
         }
 
-        public void Move(int addX, int addY)
+        public void Move(Point direction)
         {
-            pos.Offset(addX, addY);
+            pos = new Point(pos.X + direction.X, pos.Y + direction.Y);
         }
     }
 }

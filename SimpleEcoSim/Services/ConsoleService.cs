@@ -10,8 +10,16 @@ namespace SimpleEcoSim.Services
 {
     internal static class ConsoleService
     {
+        // Установка размеров буфера и окна
+        const int BufferWidth = 120;
+        const int BufferHeight = 40;
+        public const int WindowWidth = 120;
+        public const int WindowHeight = 40;
+
         static List<Rectangle> dirtyRectangles = new List<Rectangle>();
         static char[,] buffer;
+
+
 
         public static void Init()
         {
@@ -22,13 +30,24 @@ namespace SimpleEcoSim.Services
 
         public static void DrawAll(List<Entity> items)
         {
-            dirtyRectangles.Clear();
+            ClearDirtyRect();
+            InitializeBuffer();
             foreach (Entity item in items)
             {
                 buffer[item.pos.X, item.pos.Y] = item.Sign;
                 dirtyRectangles.Add(new Rectangle(item.pos.X, item.pos.Y, 1, 1));
             }
             RenderNew();
+        }
+
+
+        static void ClearDirtyRect()
+        {
+            foreach (var rect in dirtyRectangles)
+            {
+                Console.SetCursorPosition(rect.X, rect.Y);
+                Console.Write('.');
+            }
         }
 
         static void RenderNew()
@@ -79,22 +98,18 @@ namespace SimpleEcoSim.Services
             const int maxWindowWidth = 8191;
             const int maxWindowHeight = 30000;
 
-            // Установка размеров буфера и окна
-            int newBufferWidth = 120;
-            int newBufferHeight = 40;
-            int newWindowWidth = 120;
-            int newWindowHeight = 40;
+
 
             try
             {
                 Console.SetBufferSize(
-                    Math.Min(newBufferWidth, maxBufferWidth),
-                    Math.Min(newBufferHeight, maxBufferHeight)
+                    Math.Min(BufferWidth, maxBufferWidth),
+                    Math.Min(BufferHeight, maxBufferHeight)
                 );
 
                 Console.SetWindowSize(
-                    Math.Min(newWindowWidth, maxWindowWidth),
-                    Math.Min(newWindowHeight, maxWindowHeight)
+                    Math.Min(WindowWidth, maxWindowWidth),
+                    Math.Min(WindowHeight, maxWindowHeight)
                 );
             }
             catch (ArgumentOutOfRangeException ex)
