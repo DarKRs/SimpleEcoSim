@@ -11,6 +11,7 @@ namespace SimpleEcoSim.Services
     public class MovementService
     {
         private readonly AnimalService _animalService;
+        private static readonly Random _random = new Random();
 
         public MovementService(AnimalService animalService)
         {
@@ -19,7 +20,8 @@ namespace SimpleEcoSim.Services
 
         public void MoveAll()
         {
-            foreach (var movable in _animalService.Items.OfType<IMovable>())
+            var movables = _animalService.Items.OfType<IMovable>().ToList();
+            foreach (var movable in movables)
             {
                 MoveMovable(movable);
             }
@@ -27,41 +29,82 @@ namespace SimpleEcoSim.Services
 
         private void MoveMovable(IMovable movable)
         {
-            if (movable is Antelope antelope)
+            switch (movable)
             {
-                var nearestPlant = FindNearestPlant(antelope);
-                var nearestLion = FindNearestLion(antelope);
+                case Antelope antelope:
+                    HandleAntelopeMovement(antelope);
+                    break;
 
-                if (nearestLion != null && IsLionTooClose(antelope, nearestLion))
+                case Lion lion:
+                    HandleLionMovement(lion);
+                    break;
+            }
+        }
+
+        private void HandleAntelopeMovement(Antelope antelope)
+        {
+            var nearestPlant = FindNearest<Plant>(antelope);
+            var nearestLion = FindNearest<Lion>(antelope);
+
+            if (nearestLion != null && IsLionTooClose(antelope, nearestLion))
+            {
+                MoveAwayFrom(antelope, nearestLion.pos);
+            }
+            else if (nearestPlant != null && MoveTowards(antelope, nearestPlant.pos, 3))
+            {
+                _animalService.Items.Remove(nearestPlant);
+                if (_random.Next(100) > 50)
                 {
-                    MoveTowards(antelope, nearestLion.pos, -2);
-                }
-                else if (nearestPlant != null)
-                {
-                    MoveTowards(antelope, nearestPlant.pos, 2);
+                    _animalService.AddItems<Antelope>(1);
                 }
             }
-            // Логика для других существ
         }
 
-        private Plant FindNearestPlant(Antelope antelope)
+        private void HandleLionMovement(Lion lion)
         {
-            return _animalService.Items
-                .OfType<Plant>()
-                .OrderBy(p => GetDistance(antelope.pos, p.pos))
-                .FirstOrDefault();
+            var nearestAntelope = FindNearest<Antelope>(lion);
+
+            if (nearestAntelope != null && MoveTowards(lion, nearestAntelope.pos, 3))
+            {
+                _animalService.Items.Remove(nearestAntelope);
+                if(_random.Next(100) > 70) {
+                    _animalService.AddItems<Lion>(1);
+                }
+                
+            }
+            else
+            {
+                MoveRandomly(lion);
+            }
         }
 
-        private Lion FindNearestLion(Antelope antelope)
+        private T FindNearest<T>(Entity entity) where T : Entity
         {
             return _animalService.Items
-                .OfType<Lion>() 
-                .OrderBy(l => GetDistance(antelope.pos, l.pos))
+                .OfType<T>()
+                .OrderBy(e => GetDistance(entity.pos, e.pos))
                 .FirstOrDefault();
         }
 
         private bool IsLionTooClose(Antelope antelope, Lion lion)
             => GetDistance(antelope.pos, lion.pos) < 5;
+
+        private void MoveRandomly(Lion lion)
+        {
+            var angle = _random.NextDouble() * 2 * Math.PI;
+            var direction = new PointF((float)Math.Cos(angle), (float)Math.Sin(angle));
+            lion.pos = EnsureWithinBounds(new Point(
+                lion.pos.X + (int)(direction.X * 1),
+                lion.pos.Y + (int)(direction.Y * 1)));
+        }
+
+        private void MoveAwayFrom(Antelope antelope, Point threatPosition)
+        {
+            var direction = GetDirection(antelope.pos, threatPosition);
+            antelope.pos = EnsureWithinBounds(new Point(
+                antelope.pos.X - (int)(direction.X * 5),
+                antelope.pos.Y - (int)(direction.Y * 5)));
+        }
 
         private Point EnsureWithinBounds(Point pos)
         {
@@ -81,11 +124,17 @@ namespace SimpleEcoSim.Services
             return magnitude == 0 ? new PointF(0, 0) : new PointF((float)(deltaX / magnitude), (float)(deltaY / magnitude));
         }
 
-        private void MoveTowards(Antelope antelope, Point target, double multiplier)
+        private bool MoveTowards(Entity movable, Point target, double multiplier)
         {
-            var direction = GetDirection(antelope.pos, target);
-            antelope.Move(new Point((int)(direction.X * multiplier), (int)(direction.Y * multiplier)));
-            antelope.pos = EnsureWithinBounds(antelope.pos);
+            var direction = GetDirection(movable.pos, target);
+            var newPosition = new Point(
+                movable.pos.X + (int)(direction.X * multiplier),
+                movable.pos.Y + (int)(direction.Y * multiplier));
+
+            newPosition = EnsureWithinBounds(newPosition);
+            bool reachedTarget = GetDistance(newPosition, target) < 2;
+            movable.pos = newPosition;
+            return reachedTarget;
         }
     }
 }

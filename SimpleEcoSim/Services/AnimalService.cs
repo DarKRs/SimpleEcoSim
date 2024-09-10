@@ -42,6 +42,8 @@ namespace SimpleEcoSim.Services
             }
         }
 
+
+
         Point FindFreePosition()
         {
             Point newPosition;

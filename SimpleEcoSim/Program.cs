@@ -14,7 +14,7 @@ namespace SimpleEcoSim
             Random rnd = new Random();
             Console.Clear();
             ConsoleService.Init();
-            AnimalService animalService = new AnimalService(10, 15, 5);
+            AnimalService animalService = new AnimalService(10, 5, 1);
             MovementService movementService = new MovementService(animalService);
             do
             {
@@ -22,7 +22,10 @@ namespace SimpleEcoSim
                 {
                     ConsoleService.DrawAll(animalService.Items);
                     movementService.MoveAll();
-                    Thread.Sleep(1000);
+                    Thread.Sleep(300);
+                    if(rnd.Next(100) > 70)
+                        animalService.AddItems<Plant>(1);
+
                 }
             }
             while (Console.ReadKey(true).Key != ConsoleKey.Q);
