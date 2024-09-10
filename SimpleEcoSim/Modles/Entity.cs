@@ -9,7 +9,14 @@ namespace SimpleEcoSim.Modles
     abstract class Entity
     {
         public string Sign { get; set; }
-        Tuple<int, int> pos { get; set; }
+        public Tuple<int, int> pos { get; set; }
+
+        public void Draw()
+        {
+            Console.CursorLeft = pos.Item1;
+            Console.CursorTop = pos.Item2;
+            Console.Write(Sign);
+        }
 
     }
 }

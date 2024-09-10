@@ -13,10 +13,7 @@ namespace SimpleEcoSim.Modles
             pos = position;
         }
 
-        public void draw()
-        {
-            Console.
-        }
+
 
     }
 }
