@@ -25,8 +25,8 @@ namespace SimpleEcoSim.Services
             dirtyRectangles.Clear();
             foreach (Entity item in items)
             {
-                buffer[item.pos.Item1, item.pos.Item2] = item.Sign;
-                dirtyRectangles.Add(new Rectangle(item.pos.Item1, item.pos.Item2, 1, 1));
+                buffer[item.pos.X, item.pos.Y] = item.Sign;
+                dirtyRectangles.Add(new Rectangle(item.pos.X, item.pos.Y, 1, 1));
             }
             RenderNew();
         }

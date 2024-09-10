@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,14 @@ namespace SimpleEcoSim.Modles
     abstract class Entity
     {
         public char Sign { get; set; }
-        public Tuple<int, int> pos { get; set; }
+        public Point pos { get; set; }
+
+        public int Speed { get; set; }
 
         public void Draw()
         {
-            Console.CursorLeft = pos.Item1;
-            Console.CursorTop = pos.Item2;
+            Console.CursorLeft = pos.X;
+            Console.CursorTop = pos.Y;
             Console.Write(Sign);
         }
 

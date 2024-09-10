@@ -1,6 +1,7 @@
 ﻿using SimpleEcoSim.Modles;
 using SimpleEcoSim.Services;
 using System;
+using System.Drawing;
 
 namespace SimpleEcoSim
 {
@@ -10,21 +11,17 @@ namespace SimpleEcoSim
 
         static void Main(string[] args)
         {
+            Random rnd = new Random();
             Console.Clear();
             ConsoleService.Init();
-            List<Entity> items = new List<Entity>();
-            Random rnd = new Random();
-            for(int i = 0; i < rnd.Next(20); i++)
-            {
-                items.Add(new Plant(Tuple.Create(rnd.Next(120), rnd.Next(40))));
-            }
+            AnimalService animalService = new AnimalService(10, 25, 0);
             do
             {
                 while (!Console.KeyAvailable)
                 {
-                    ConsoleService.DrawAll(items);
+                    ConsoleService.DrawAll(animalService.GetItems());
                     Thread.Sleep(1000);
-                    items.Add(new Plant(Tuple.Create(rnd.Next(120), rnd.Next(40))));
+                    animalService.AddPlant(1);
                     Thread.Sleep(1000);
                 }
             }
