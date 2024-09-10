@@ -9,7 +9,7 @@ namespace SimpleEcoSim.Modles
     internal class Plant : Entity
     {
         public Plant(Tuple<int,int> position) {
-            Sign = "*";
+            Sign = '*';
             pos = position;
         }
 

@@ -8,7 +8,7 @@ namespace SimpleEcoSim.Modles
 {
     abstract class Entity
     {
-        public string Sign { get; set; }
+        public char Sign { get; set; }
         public Tuple<int, int> pos { get; set; }
 
         public void Draw()
