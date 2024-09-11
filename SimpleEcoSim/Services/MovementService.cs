@@ -67,7 +67,7 @@ namespace SimpleEcoSim.Services
             if (nearestAntelope != null && MoveTowards(lion, nearestAntelope.pos, 3))
             {
                 _animalService.Items.Remove(nearestAntelope);
-                if(_random.Next(100) > 70) {
+                if(_random.Next(100) > 90) {
                     _animalService.AddItems<Lion>(1);
                 }
                 

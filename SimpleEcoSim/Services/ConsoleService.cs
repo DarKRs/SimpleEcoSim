@@ -10,16 +10,13 @@ namespace SimpleEcoSim.Services
 {
     internal static class ConsoleService
     {
-        // Установка размеров буфера и окна
         const int BufferWidth = 120;
         const int BufferHeight = 40;
         public const int WindowWidth = 120;
         public const int WindowHeight = 40;
 
-        static List<Rectangle> dirtyRectangles = new List<Rectangle>();
         static char[,] buffer;
-
-
+        static HashSet<Rectangle> dirtyRectangles = new HashSet<Rectangle>();
 
         public static void Init()
         {
@@ -31,7 +28,6 @@ namespace SimpleEcoSim.Services
         public static void DrawAll(List<Entity> items)
         {
             ClearDirtyRect();
-            InitializeBuffer();
             foreach (Entity item in items)
             {
                 buffer[item.pos.X, item.pos.Y] = item.Sign;
@@ -40,50 +36,60 @@ namespace SimpleEcoSim.Services
             RenderNew();
         }
 
-
         static void ClearDirtyRect()
         {
             foreach (var rect in dirtyRectangles)
             {
-                Console.SetCursorPosition(rect.X, rect.Y);
-                Console.Write('.');
+                // Заполняем очищенные области символом ' '
+                for (int y = rect.Y; y < rect.Bottom; y++)
+                {
+                    for (int x = rect.X; x < rect.Right; x++)
+                    {
+                        buffer[x, y] = ' ';
+                    }
+                }
             }
+            dirtyRectangles.Clear();
         }
 
         static void RenderNew()
         {
-            foreach (var rect in dirtyRectangles)
+            var sb = new StringBuilder();
+            for (int y = 0; y < WindowHeight; y++)
             {
-                Console.SetCursorPosition(rect.X, rect.Y);
-                Console.Write(buffer[rect.X, rect.Y]);
+                for (int x = 0; x < WindowWidth; x++)
+                {
+                    sb.Append(buffer[x, y]);
+                }
+                sb.AppendLine();
             }
+            Console.SetCursorPosition(0, 0);
+            Console.Write(sb.ToString());
         }
-
 
         static void RenderBuffer()
         {
-            for (int y = 0; y < Console.WindowHeight; y++)
+            var sb = new StringBuilder();
+            for (int y = 0; y < WindowHeight; y++)
             {
-                for (int x = 0; x < Console.WindowWidth; x++)
+                for (int x = 0; x < WindowWidth; x++)
                 {
-                    Console.SetCursorPosition(x, y);
-                    Console.Write(buffer[x, y]);
+                    sb.Append(buffer[x, y]);
                 }
-
+                sb.AppendLine();
             }
+            Console.SetCursorPosition(0, 0);
+            Console.Write(sb.ToString());
         }
-
-
-
 
         static void InitializeBuffer()
         {
-            buffer = new char[Console.WindowWidth, Console.WindowHeight];
-            for (int i = 0; i < Console.WindowWidth; i++)
+            buffer = new char[WindowWidth, WindowHeight];
+            for (int i = 0; i < WindowWidth; i++)
             {
-                for (int j = 0; j < Console.WindowHeight; j++)
+                for (int j = 0; j < WindowHeight; j++)
                 {
-                    buffer[i, j] = '.';
+                    buffer[i, j] = ' ';
                 }
             }
         }
